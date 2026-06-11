@@ -28,6 +28,12 @@
 .ORG 0x0000
     RJMP Inicializacoes
 
+.ORG INT0addr            ; Interrupção do Botão (PD2)
+    RJMP ISR_Botao
+
+.ORG INT1addr            ; Interrupção do Sensor (PD3)
+    RJMP ISR_Sensor
+
 .ORG OC1Aaddr
     RJMP ISR_Timer1
 
@@ -48,7 +54,7 @@ Inicializacoes:
     
     LDI AUX, (1<<LED)|(1<<SEG_G)
     OUT DDRD, AUX              
-    LDI AUX, (1<<INTERRUPTOR)|(1<<SENSOR)
+    LDI AUX, (1<<INTERRUPTOR)
     OUT PORTD, AUX             
 
     ; PORTC
@@ -73,37 +79,31 @@ Inicializacoes:
     LDI AUX, (1<<OCIE1A)
     STS TIMSK1, AUX
 
+    LDI AUX, (1<<ISC11)|(1<<ISC10)|(1<<ISC01)|(0<<ISC00)
+    STS EICRA, AUX
+
+    LDI AUX, (1<<INT1)|(1<<INT0)
+    OUT EIMSK, AUX
+
     SEI                    
 
-; main[
+; main
 
 Principal:
-   
-    SBIS PIND, INTERRUPTOR    
-    RCALL Trata_Botao
-
-    ; Sensor ativado 
-    SBIS PIND, SENSOR       
-    RCALL Trata_Sensor
-
-    SBIC PIND, SENSOR          
+    SBIS PIND, SENSOR          
     CBR FLAG_REG, (1<<FLAG_OVERRIDE)
 
- 
     CPI DEZENA, 0
     BRNE Verifica_Flag_LED
     CPI UNIDADE, 0
     BRNE Verifica_Flag_LED
 
-   
     CBI PORTD, LED
     RJMP Atualiza_E_Repete
 
 Verifica_Flag_LED:
-   
     SBRS FLAG_REG, FLAG_OVERRIDE
     SBI PORTD, LED
-    
     SBRC FLAG_REG, FLAG_OVERRIDE
     CBI PORTD, LED
 
@@ -111,29 +111,39 @@ Atualiza_E_Repete:
     RCALL AtualizaDisplay
     RJMP Principal
 
-Trata_Botao:
+ISR_Botao:
+    PUSH AUX
+    IN AUX, SREG
+    PUSH AUX
+
     SBR FLAG_REG, (1<<FLAG_OVERRIDE)
-    CLI
     LDI DEZENA, 0
     LDI UNIDADE, 0
-    SEI
-Wait_Botao:
-    RCALL AtualizaDisplay
-    SBIS PIND, INTERRUPTOR     
-    RJMP Wait_Botao
-    RET
 
-Trata_Sensor:
+    POP AUX
+    OUT SREG, AUX
+    POP AUX
+    RETI
+
+ISR_Sensor:
+    PUSH AUX
+    IN AUX, SREG
+    PUSH AUX
+
     SBRC FLAG_REG, FLAG_OVERRIDE
-    RET
-    CLI
+    RJMP Fim_ISR_Sensor
+
     LDI DEZENA, 1
     LDI UNIDADE, 5
     CLR AUX
     STS TCNT1H, AUX
     STS TCNT1L, AUX
-    SEI
-    RET
+
+Fim_ISR_Sensor:
+    POP AUX
+    OUT SREG, AUX
+    POP AUX
+    RETI
 
 AtualizaDisplay:
 
@@ -220,6 +230,17 @@ ISR_Timer1:
     IN AUX, SREG
     PUSH AUX
 
+    SBRC FLAG_REG, FLAG_OVERRIDE
+    RJMP Avalia_Zero
+
+    SBIS PIND, SENSOR
+    RJMP Avalia_Zero      
+
+    LDI DEZENA, 1
+    LDI UNIDADE, 5
+    RJMP Fim_ISR          
+
+Avalia_Zero:
     CPI DEZENA, 0
     BRNE Decrementa_Tempo
     CPI UNIDADE, 0

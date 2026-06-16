@@ -31,7 +31,7 @@ Este projeto consiste em um Sistema de Iluminação Inteligente com controle de 
 
 ##  Tecnologias e Componentes Utilizados
 
-* Arduino Uno (ATMEGA328p)
+* Arduino Uno R3 (ATMEGA328p)
 * 2 Displays de 7 segmentos cátodo comum
 * 1 Sensor de movimento PIR HC -SR501
 * 1 LED 5 mm azul

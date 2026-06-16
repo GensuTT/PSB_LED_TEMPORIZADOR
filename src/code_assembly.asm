@@ -192,26 +192,26 @@ AtualizaDisplay:
     CBI PORTD, SEG_G      ; Se o bit 6 for 0, desliga o pino PD5
 
     
-    SBI CONTROLE, ContDez
-    RCALL AtrasoMultiplex
+    SBI CONTROLE, ContDez ; Liga o transistor que ativa o display para as dezenas
+    RCALL AtrasoMultiplex ; Chama o delay para a luz ser perceptível para o olho humano
 
  
-    CBI CONTROLE, ContDez
+    CBI CONTROLE, ContDez ; Desliga o transistor das unidades antes de efetuar a troca do número
 
     RET
 
 
 AtrasoMultiplex:
-    LDI R18, 50
+    LDI R18, 50          ; Carrega o valor 50 no registrador
 L_AM1:
-    LDI R19, 200
+    LDI R19, 200         ; Carrega o valor 200 no registrador
 L_AM2:
-    NOP
-    DEC R19
-    BRNE L_AM2
-    DEC R18
-    BRNE L_AM1
-    RET
+    NOP                  ; Gasto de 1 ciclo de clock
+    DEC R19              ; Decremento em R19
+    BRNE L_AM2           ; Volta para L_AM2 caso R19 não seja 0
+    DEC R18              ; Decremento em R18
+    BRNE L_AM1           ; Volta para L_AM1 caso R18 não seja 0
+    RET                  ; Retorno sub-rotina
 
 
 Decodifica:

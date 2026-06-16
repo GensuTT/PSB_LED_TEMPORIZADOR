@@ -20,11 +20,11 @@ Este projeto consiste em um Sistema de Iluminação Inteligente com controle de 
 
 ##  Integrantes
 
-* **Moisés Santana** – @mosasantana
-* **Lucca Lobo** – @Luccacalu
-* **Gustavo Silva** – @guspink
-* **Lucas da Costa Ramos** - @LucasRamows
-* **Matheus Santos** - @GensuTT
+* **Moisés Santana** – @mosasantana  (colaborou com o circuito físico e na adição de imagens)
+* **Lucca Lobo** – @Luccacalu (colaborou no circuito digital e na construção do circuito físico)
+* **Gustavo Silva** – @guspink (colaborou no código e nos comentários do mesmo)
+* **Lucas da Costa Ramos** - @LucasRamows (colaborou no código e testes do mesmo)
+* **Matheus Santos** - @GensuTT (colaborou na documentação e montagem do circuito físico) 
 
 
 ---

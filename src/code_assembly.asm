@@ -215,52 +215,52 @@ L_AM2:
 
 
 Decodifica:
-    LDI ZH, HIGH(Tabela<<1)
-    LDI ZL, LOW(Tabela<<1)
-    ADD ZL, AUX
-    BRCC le_tab
-    INC ZH
+    LDI ZH, HIGH(Tabela<<1) ; Carrega na memória flash o endereço alto da tabela
+    LDI ZL, LOW(Tabela<<1)  ; Carrega na memória flash o endereço baixo da tabela
+    ADD ZL, AUX          ; Soma o valor do dígito ao endereço base
+    BRCC le_tab          ; Se não houver carry, pula para ler a tabela
+    INC ZH               ; Se houver carry. incrementa o endereço alto
 le_tab:
-    LPM R0, Z
-    RET
+    LPM R0, Z            ; Lê o byte da memória Flash apontado por Z e salva o valor em R0
+    RET                  ; Retorno da sub-rotina
 
 
 ISR_Timer1:
-    PUSH AUX
-    IN AUX, SREG
-    PUSH AUX
+    PUSH AUX             ;
+    IN AUX, SREG         ;
+    PUSH AUX             ;
 
     SBRC FLAG_REG, FLAG_OVERRIDE
-    RJMP Avalia_Zero
+    RJMP Avalia_Zero     ;
 
-    SBIS PIND, SENSOR
-    RJMP Avalia_Zero      
+    SBIS PIND, SENSOR    ;
+    RJMP Avalia_Zero     ;   
 
-    LDI DEZENA, 1
-    LDI UNIDADE, 5
-    RJMP Fim_ISR          
+    LDI DEZENA, 1        ;
+    LDI UNIDADE, 5       ;
+    RJMP Fim_ISR         ;          
 
 Avalia_Zero:
-    CPI DEZENA, 0
-    BRNE Decrementa_Tempo
-    CPI UNIDADE, 0
-    BREQ Fim_ISR
+    CPI DEZENA, 0        ;
+    BRNE Decrementa_Tempo ;
+    CPI UNIDADE, 0       ;
+    BREQ Fim_ISR         ;
 
 Decrementa_Tempo:
-    CPI UNIDADE, 0
-    BRNE Sub_Unidade
-    DEC DEZENA
-    LDI UNIDADE, 9
-    RJMP Fim_ISR
+    CPI UNIDADE, 0       ;
+    BRNE Sub_Unidade     ;
+    DEC DEZENA           ;
+    LDI UNIDADE, 9       ;
+    RJMP Fim_ISR         ;
 
 Sub_Unidade:
-    DEC UNIDADE
+    DEC UNIDADE          ;
 
 Fim_ISR:
-    POP AUX
-    OUT SREG, AUX
-    POP AUX
-    RETI
+    POP AUX              ;
+    OUT SREG, AUX        ;
+    POP AUX              ;
+    RETI                 ;
 
 Tabela:
     .DB 0x3F, 0x06 ; 0, 1

@@ -8,3 +8,24 @@ A ideia do circuito é aplicar o funcionamento de uma luz que acende automaticam
 
 Inicialmente, foi construído o diagrama do circuito no simulIDE, onde fizemos a multiplexação de dois displays de 7 segmentos cátodo comum, onde cada display está conectado a um transistor (para caso acendesse todos os segmentos do display, esse não ser queimado). Ainda sobre multiplexação, quando fizemos o circuito físico, usamos os jumpers macho-macho para passar corrente dos pinos de um display para outro display, além de configurarmos manualmente o sensor de movimento para o mínimo de distância e tempo de envio de sinal de alta voltagem. Usamos resistores individuais de 220 ohms nos pinos individuais de segmentos do displays para que as luzes não ficassem fracas se muitos segmentos fossem acesos ao mesmo tempo. Para os transistores, utilizamos resistores de 1k ohm pois eles não necessitam de muita energia para ativação. Ademais, utilizamos a combinação de fios jumpers macho-fêmea e macho-macho para passarmos de um protoboard para outro (utilizamos dois por conta do espaço necessário e facilidade de manutenção). É válido ressaltar que ao contrário do botão, que necessita do pullup ativado, o sensor de movimento não necessita de pullup ou pulldown, já que ele possui um circuito próprio e está sempre alimentando com 0 ou 1. 
 
+#### Relações dos pinos
+
+Segue a relação dos pinos que entregam voltagem pra acender os tracinhos do display, que passam pelos resistores de 220, e suas portas. 
+
+**Segmento do Display**-----------**Pino Arduíno**-----------**Porta** 
+*   Segmento A-----------------------8------------------- PB0
+*   Segmento B-----------------------9------------------- PB1
+*   Segmento C-----------------------10------------------ PB2
+*   Segmento D-----------------------11------------------ PB3
+*   Segmento E-----------------------12------------------ PB4
+*   Segmento F-----------------------13------------------ PB5
+*   Segmento G-----------------------5------------------- PD5
+
+Segue também a relação dos pinos que ligam a luz principal, também a dos transistores dos displays, do botão e do Sensor de movimento.
+
+**Componente**-----------**Pino Arduíno**-----------**Porta** 
+*   LED-----------------------4------------------ PD4
+*   Transistor (Dezenas)-----A0----------------- PC0
+*   Transistor (Unidades)----A1----------------- PC1
+*   Botão--------------------2------------------- PD2
+*   Sensor de Movimento--3------------------- PD3 

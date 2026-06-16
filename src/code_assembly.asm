@@ -93,23 +93,23 @@ Principal:
     SBIS PIND, SENSOR ; Verificamos o pino do sensor, caso esteja baixa (detectando presença) limpa a flag de override, iniciando novamente o sistema         
     CBR FLAG_REG, (1<<FLAG_OVERRIDE)
 
-    CPI DEZENA, 0
-    BRNE Verifica_Flag_LED
-    CPI UNIDADE, 0
-    BRNE Verifica_Flag_LED
+    CPI DEZENA, 0 ; Comparação da Dezena com 0
+    BRNE Verifica_Flag_LED ; Se não for igual, há o pulo para verificar a flag do LED com a instrução
+    CPI UNIDADE, 0 ; Comparação da Unidade com 0
+    BRNE Verifica_Flag_LED ; Se não for igual, há o pulo para verificar a flag do LED com a instrução
 
-    CBI PORTD, LED
-    RJMP Atualiza_E_Repete
+    CBI PORTD, LED ; (Clear Bit in I/O Register), se ambos Unidade e Dezena forem 0, desligar o LED
+    RJMP Atualiza_E_Repete ; Pulo direto para a atualização do display
 
 Verifica_Flag_LED:
-    SBRS FLAG_REG, FLAG_OVERRIDE
-    SBI PORTD, LED
-    SBRC FLAG_REG, FLAG_OVERRIDE
-    CBI PORTD, LED
+    SBRS FLAG_REG, FLAG_OVERRIDE ; Pula para a próxima instrução caso o bit FLAG_OVERRIDE setado
+    SBI PORTD, LED ; Se a flag estiver em 0, ligar o LED
+    SBRC FLAG_REG, FLAG_OVERRIDE ; Pula para a próxima instrução caso o bit FLAG_OVERRIDE esteja zerado
+    CBI PORTD, LED ; Se a flag estiver e m1, desligar o LED
 
 Atualiza_E_Repete:
-    RCALL AtualizaDisplay
-    RJMP Principal
+    RCALL AtualizaDisplay ; Chama a sub-rotina de atualização do display
+    RJMP Principal ; Retorna ao início do loop principal
 
 ISR_Botao:
     PUSH AUX

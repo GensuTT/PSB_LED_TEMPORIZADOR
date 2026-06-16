@@ -17,3 +17,11 @@ Para a construção do circuito físico, utilizamos os seguintes materiais:
 Em seguida, temos em anexo, o diagrama no simulIDE, onde priorizamos a clareza visual, mantendo apenas um terra na parte inferior e a boa organização dos fios. 
 
 ![Diagrama do Circuito no SimulIDE](../assets/digital/digital-circuit.png)
+
+## Circuito Físico:
+Temos também o anexo do circuito físico, o qual seguiu fielmente o diagrama do simulide
+
+![Imagem do Circuito físico](../assets/physical/full-circuit.jpg)
+
+
+

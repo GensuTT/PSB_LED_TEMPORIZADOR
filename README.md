@@ -1,12 +1,43 @@
-# PSB_LED_TEMPORIZADOR
+# Sistema de Iluminação Inteligente com Temporizador
 
-# Circuito Digital SIMULIDE
+#### Universidade Federal da Bahia  
+#### **Disciplina:** Programação de Software Básico  
+#### **Professor(a):** Euclerio Barbosa
+#### **Disciplina-Ano:** MATA49 - 2026.1  
 
-## Pinos Utilizados (I/O)
+---
 
-* **PB0 até PB6 (PORTB):** Ligados nos segmentos 'a' até 'g' dos dois displays de 7 segmentos (com resistores de 220 ohms).
-* **PC0:** Liga/desliga o display das dezenas (ativo em 0).
-* **PC1:** Liga/desliga o display das unidades (ativo em 0).
-* **PD2:** Botão do interruptor para desligamento forçado (pull-up interno ativo, dispara em 0).
-* **PD3:** Botão que simula o sensor de movimento (pull-up interno ativo, dispara em 0).
-* **PD4:** LED que representa a lâmpada do corredor (com resistor de 220 ohms, acende em 1).
+##  Descrição do Projeto
+
+Este projeto consiste em um Sistema de Iluminação Inteligente com controle de tempo e detecção de presença. O sistema foi desenvolvido para gerenciar o acionamento de um LED com base na movimentação do ambiente e intervenção manual, operando da seguinte maneira:
+
+* **Acionamento Automático:** Um sensor de movimento detecta a presença no ambiente e acende a iluminação (representada por um LED).
+* **Temporizador Visual:** Simultaneamente ao acionamento, um display duplo de 7 segmentos inicia uma contagem regressiva utilizando a técnica de multiplexação.
+* **Reinicialização por Movimento:** Caso o sensor detecte um novo movimento enquanto a luz estiver acesa, o temporizador é automaticamente reiniciado, mantendo o ambiente iluminado.
+* **Controle Manual (Desligamento Forçado):** O sistema possui um botão que, ao ser pressionado, interrompe a contagem e força o desligamento imediato do LED a qualquer momento. 
+
+---
+
+##  Integrantes
+
+* **Moisés Santana** – @mosasantana
+* **Lucca Lobo** – @Luccacalu
+* **Gustavo Silva** – @guspink
+* **Lucas da Costa Ramos** - @LucasRamows
+* **Matheus Santos** - @GensuTT
+
+
+---
+
+##  Tecnologias e Componentes Utilizados
+
+* Arduino Uno (ATMEGA328p)
+* 2 Displays de 7 segmentos cátodo comum
+* 1 Sensor de movimento PIR HC -SR501
+* 1 LED 5 mm azul
+* 2 Protoboards 830 pontos
+* 3 Kits jumpers macho-macho e 3 kits jumpers macho-fêmea
+* 2 Transistores BC547
+* 1 botão
+* 8 resistores de 220 ohms
+* 2 resistores de 1k ohm

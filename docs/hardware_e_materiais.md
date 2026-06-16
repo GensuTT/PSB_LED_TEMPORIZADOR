@@ -11,3 +11,9 @@ Para a construção do circuito físico, utilizamos os seguintes materiais:
 * 1 botão
 * 8 resistores de 220 ohms
 * 2 resistores de 1k ohm
+
+
+## Diagrama do circuito (simulIDE):
+Em seguida, temos em anexo, o diagrama no simulIDE, onde priorizamos a clareza visual, mantendo apenas um terra na parte inferior e a boa organização dos fios. 
+
+![Diagrama do Circuito no SimulIDE](../assets/digital/digital-circuit.png)

@@ -93,10 +93,10 @@ Principal:
     SBIS PIND, SENSOR ; Verificamos o pino do sensor, caso esteja baixa (detectando presença) limpa a flag de override, iniciando novamente o sistema         
     CBR FLAG_REG, (1<<FLAG_OVERRIDE)
 
-    CPI DEZENA, 0 ; Comparação da Dezena com 0
-    BRNE Verifica_Flag_LED ; Se não for igual, há o pulo para verificar a flag do LED com a instrução
-    CPI UNIDADE, 0 ; Comparação da Unidade com 0
-    BRNE Verifica_Flag_LED ; Se não for igual, há o pulo para verificar a flag do LED com a instrução
+    CPI DEZENA, 0 ; Comparação da dezena com 0
+    BRNE Verifica_Flag_LED ; Se não for igual, verificar a flag do LED com a sub-rotina
+    CPI UNIDADE, 0 ; Comparação da unidade com 0
+    BRNE Verifica_Flag_LED ; Se não for igual, verificar a flag do LED com a sub-rotina
 
     CBI PORTD, LED ; (Clear Bit in I/O Register), se ambos Unidade e Dezena forem 0, desligar o LED
     RJMP Atualiza_E_Repete ; Pulo direto para a atualização do display
@@ -112,67 +112,67 @@ Atualiza_E_Repete:
     RJMP Principal ; Retorna ao início do loop principal
 
 ISR_Botao:
-    PUSH AUX
-    IN AUX, SREG
-    PUSH AUX
+    PUSH AUX              ; Salva o AUX atual na pilha
+    IN AUX, SREG          ; Lê SREG no AUX
+    PUSH AUX              ; Salva o AUX (com SREG) na pilha
 
-    SBR FLAG_REG, (1<<FLAG_OVERRIDE)
-    LDI DEZENA, 0
-    LDI UNIDADE, 0
+    SBR FLAG_REG, (1<<FLAG_OVERRIDE) ; Coloca o bit de Override no FLAG_REG
+    LDI DEZENA, 0         ; Zera a contagem de Dezena
+    LDI UNIDADE, 0        ; Zera a contagem de Unidade
 
-    POP AUX
-    OUT SREG, AUX
-    POP AUX
-    RETI
+    POP AUX               ; Restaura o registrador de status da pilha
+    OUT SREG, AUX         ; Escreve no registrador de status
+    POP AUX               ; Restaura o valor original do AUX na pilha
+    RETI                  ; Retorno da interrupção
 
 ISR_Sensor:
-    PUSH AUX
-    IN AUX, SREG
-    PUSH AUX
+    PUSH AUX              ; Salva o AUX na pilha
+    IN AUX, SREG          ; Lê SREG no AUX
+    PUSH AUX              ; Salva o AUX (com SREG) na pilha
 
-    SBRC FLAG_REG, FLAG_OVERRIDE
-    RJMP Fim_ISR_Sensor
+    SBRC FLAG_REG, FLAG_OVERRIDE ; Se a flag de Override estiver em 0, pula para a próxima instrução
+    RJMP Fim_ISR_Sensor   ; Se estiver em 1, vai para o fim (não acender)
 
-    LDI DEZENA, 1
-    LDI UNIDADE, 5
-    CLR AUX
-    STS TCNT1H, AUX
-    STS TCNT1L, AUX
+    LDI DEZENA, 1         ; Reinicia o tempo para 15 segundos caso o Override seja 0
+    LDI UNIDADE, 5        ; Reinicia as unidades pra 5
+    CLR AUX               ; Zera o AUX
+    STS TCNT1H, AUX       ; Zera a parte alta do contador do Timer 1
+    STS TCNT1L, AUX       ; Zera a parte baixa do contador do Timer 1
 
 Fim_ISR_Sensor:
-    POP AUX
-    OUT SREG, AUX
-    POP AUX
-    RETI
+    POP AUX               ; Restaura o registrador de status da pilha
+    OUT SREG, AUX         ; Escreve no registrador de status
+    POP AUX               ; Restaura o valor original do AUX na pilha
+    RETI                  ; Retorno da interrupção
 
 AtualizaDisplay:
 
-    CBI CONTROLE, ContDez
-    CBI CONTROLE, ContUni
+    CBI CONTROLE, ContDez ; Desliga o controle do display das dezenas
+    CBI CONTROLE, ContUni ; Desliga o controle do display das unidades
 
 
-    MOV AUX, UNIDADE
-    RCALL Decodifica
+    MOV AUX, UNIDADE      ; Coloca o valor da unidade no AUX
+    RCALL Decodifica      ; Chama a rotina de decodificação
 
-    MOV AUX, R0
-    ANDI AUX, 0x3F            
-    OUT PORTB, AUX
+    MOV AUX, R0           ; Colocando o padrão da rotina para o AUX
+    ANDI AUX, 0x3F        ; Máscara para pegar apenas os bits 0 a 5          
+    OUT PORTB, AUX        ; Envia os bits dos segmentos para a porta B
 
-    SBRC R0, 6                    
-    SBI PORTD, SEG_G              
-    SBRS R0, 6                    
-    CBI PORTD, SEG_G           
+    SBRC R0, 6            ; Pula a instrução se o bit 6 for 0                   
+    SBI PORTD, SEG_G      ; Se o bit 6 for 1, liga o pino PD5            
+    SBRS R0, 6            ; Pula a instrução se o bit 6 for 1                  
+    CBI PORTD, SEG_G      ; Se o bit 6 for 0, desliga o pino PD5         
 
    
-    SBI CONTROLE, ContUni
-    RCALL AtrasoMultiplex
+    SBI CONTROLE, ContUni ; Liga o transistor que ativa o display para as unidades
+    RCALL AtrasoMultiplex ; Chama o delay para a luz ser perceptível para o olho humano
 
     
-    CBI CONTROLE, ContUni
+    CBI CONTROLE, ContUni ; Desliga o transistor das unidades antes de efetuar a troca do número
 
 
-    MOV AUX, DEZENA
-    RCALL Decodifica
+    MOV AUX, DEZENA       ; Copia o valor da dezena para AUX
+    RCALL Decodifica      ; Chama a rotina de decodificação
 
    
 
@@ -181,15 +181,15 @@ AtualizaDisplay:
 
 
 
-    MOV AUX, R0
-    ANDI AUX, 0x3F
-    OUT PORTB, AUX
+    MOV AUX, R0           ; Colocando o padrão da rotina para o AUX
+    ANDI AUX, 0x3F        ; Máscara para pegar apenas os bits 0 a 5  
+    OUT PORTB, AUX        ; Envia os bits dos segmentos para a porta B
 
 
-    SBRC R0, 6
-    SBI PORTD, SEG_G
-    SBRS R0, 6
-    CBI PORTD, SEG_G
+    SBRC R0, 6            ; Pula a instrução se o bit 6 for 0
+    SBI PORTD, SEG_G      ; Se o bit 6 for 1, liga o pino PD5  
+    SBRS R0, 6            ; Pula a instrução se o bit 6 for 1
+    CBI PORTD, SEG_G      ; Se o bit 6 for 0, desliga o pino PD5
 
     
     SBI CONTROLE, ContDez

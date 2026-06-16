@@ -90,7 +90,7 @@ Inicializacoes:
 ; main
 
 Principal:
-    SBIS PIND, SENSOR          
+    SBIS PIND, SENSOR ; Verificamos o pino do sensor, caso esteja baixa (detectando presença) limpa a flag de override, iniciando novamente o sistema         
     CBR FLAG_REG, (1<<FLAG_OVERRIDE)
 
     CPI DEZENA, 0

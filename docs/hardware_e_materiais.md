@@ -2,6 +2,7 @@
 
 ## Materiais utilizados:
 Para a construção do circuito físico, utilizamos os seguintes materiais:
+* 1 Arduíno Uno R3
 * 2 Displays de 7 segmentos cátodo comum
 * 1 Sensor de movimento PIR HC -SR501
 * 1 LED 5 mm azul
@@ -23,5 +24,17 @@ Temos também o anexo do circuito físico, o qual seguiu fielmente o diagrama do
 
 ![Imagem do Circuito físico](../assets/physical/full-circuit.jpg)
 
+## imagens dos componentes:
+Segue também imagens dos componentes utilizados
 
+* Protoboard Principal: 
+![Imagem do protoboard principal](../assets/physical/main-protoboard-1.jpg)
 
+* Protoboard Auxiliar: 
+![Imagem do protoboard auxiliar](../assets/physical/auxiliar-protoboard.jpg)
+
+* Arduíno: 
+![Imagem do arduino](../assets/physical/arduino-1.jpg)
+
+* Sensor de Movimento:
+![Imagem do sensor](../assets/physical/mov-sensor.jpg)

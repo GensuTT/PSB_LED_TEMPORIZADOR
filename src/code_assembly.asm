@@ -5,7 +5,7 @@
 ; atribuição de nome de hardware e pinos
 
 .equ INTERRUPTOR = PD2     ; D2 (Entrada c/ pull-up, ativo LOW)
-.equ SENSOR      = PD3     ; D3 (Entrada c/ pull-up, ativo LOW)
+.equ SENSOR      = PD3     ; D3 (Entrada, ativo HIGH)
 .equ LED         = PD4     ; D4 (Saída, ativo HIGH)
 .equ SEG_G       = PD5     ; D5 (Saída, Segmento G do display)
 

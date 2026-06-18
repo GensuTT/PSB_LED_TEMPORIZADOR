@@ -40,52 +40,55 @@
 ; inicio
 .ORG 0x0034
 Inicializacoes:
-    LDI AUX, HIGH(RAMEND)
-    OUT SPH, AUX
-    LDI AUX, LOW(RAMEND)
-    OUT SPL, AUX
+    ; Configuração da Pilha
+    LDI AUX, HIGH(RAMEND) ; Carrega o byte mais significativo do fim da memória RAM no AUX
+    OUT SPH, AUX          ; Move para o SPH
+    LDI AUX, LOW(RAMEND)  ; Carrega o byte menos significativo do fim da memória RAM no AUX
+    OUT SPL, AUX          ; Move para o SPL
 
     ; PORTB - Display
     
     LDI AUX, 0b00111111        
-    OUT DDRB, AUX
-    CLR AUX                  
-    OUT PORTB, AUX
+    OUT DDRB, AUX         ; Define os pinos PB0 a PB5 como saída
+    CLR AUX               ; Zera o AUX                  
+    OUT PORTB, AUX        ; Zera as saídas da Porta B
     
-    LDI AUX, (1<<LED)|(1<<SEG_G)
-    OUT DDRD, AUX              
-    LDI AUX, (1<<INTERRUPTOR)
-    OUT PORTD, AUX             
+    ; PORTD
+    
+    LDI AUX, (1<<LED)|(1<<SEG_G) ; Seta os bits para LED
+    OUT DDRD, AUX         ; Define LED e SEG_G como saída            
+    LDI AUX, (1<<INTERRUPTOR) ; Seta o bit do botão como 1
+    OUT PORTD, AUX        ; Pull-up no pino PD2           
 
     ; PORTC
     ; C0 - Dezena C1 - Unidade
-    LDI AUX, (1<<ContDez)|(1<<ContUni)
-    OUT DDRC, AUX
-    OUT PORTC, AUX            
-    LDI UNIDADE, 0
-    LDI DEZENA, 0
-    CLR FLAG_REG
+    LDI AUX, (1<<ContDez)|(1<<ContUni) ; Prepara os bits PC0 e PC1 como 1
+    OUT DDRC, AUX         ; Define PC0 e PC1 como saída
+    OUT PORTC, AUX        ; Coloca PC0 e PC1 em high            
+    LDI UNIDADE, 0        ; Inicia o tempo com 0 nas unidades
+    LDI DEZENA, 0         ; Inicia o tempo com 0 nas dezenas
+    CLR FLAG_REG          ; Zera todas as flags
 
     
 
-    CLR AUX
-    STS TCCR1A, AUX
-    LDI AUX, (1<<WGM12)|(1<<CS12)|(1<<CS10)
-    STS TCCR1B, AUX
-    LDI AUX, HIGH(15624)
-    STS OCR1AH, AUX
-    LDI AUX, LOW(15624)
-    STS OCR1AL, AUX
-    LDI AUX, (1<<OCIE1A)
-    STS TIMSK1, AUX
+    CLR AUX               ; Zera o AUX
+    STS TCCR1A, AUX       ; Zera o controle A do Timer 1
+    LDI AUX, (1<<WGM12)|(1<<CS12)|(1<<CS10) ; Modo CTC e Prescaler de 1024
+    STS TCCR1B, AUX       ; Salva no controle B do Timer 1
+    LDI AUX, HIGH(15624)  ; Carrega a parte alta do valor 15624
+    STS OCR1AH, AUX       ; Salva no registrador de comparação High
+    LDI AUX, LOW(15624)   ; Carrega a parte baixa do valor 15624
+    STS OCR1AL, AUX       ; Salva no registrador de comparação Low
+    LDI AUX, (1<<OCIE1A)  ; Prepara a ativação da interrupção por comparação A do Timer 1
+    STS TIMSK1, AUX       ; Habilita a interrupção no registrador de máscara de timer
 
-    LDI AUX, (1<<ISC11)|(1<<ISC10)|(1<<ISC01)|(0<<ISC00)
-    STS EICRA, AUX
+    LDI AUX, (1<<ISC11)|(1<<ISC10)|(1<<ISC01)|(0<<ISC00) ; INT1 borda de subida, INT0 borda de descida 
+    STS EICRA, AUX        ; Configura os gatilhos no registrador de controle de interrupção externa
 
-    LDI AUX, (1<<INT1)|(1<<INT0)
-    OUT EIMSK, AUX
+    LDI AUX, (1<<INT1)|(1<<INT0) ; Prepara ativação de INT1 e INT0
+    OUT EIMSK, AUX        ; Habilita as interrupções externas no registrador de máscara 
 
-    SEI                    
+    SEI                   ; Set Global Interrupt Flag                   
 
 ; main
 
@@ -198,7 +201,7 @@ AtualizaDisplay:
  
     CBI CONTROLE, ContDez ; Desliga o transistor das unidades antes de efetuar a troca do número
 
-    RET
+    RET                   ; Retorna para o loop principal
 
 
 AtrasoMultiplex:
@@ -226,41 +229,41 @@ le_tab:
 
 
 ISR_Timer1:
-    PUSH AUX             ;
-    IN AUX, SREG         ;
-    PUSH AUX             ;
+    PUSH AUX             ; Insere AUX na pilha
+    IN AUX, SREG         ; Lê SREG
+    PUSH AUX             ; Insere SREG na pilha
 
-    SBRC FLAG_REG, FLAG_OVERRIDE
-    RJMP Avalia_Zero     ;
+    SBRC FLAG_REG, FLAG_OVERRIDE ; Se não houver desligamento forçado, pula a próxima instrução
+    RJMP Avalia_Zero     ; Se o botão foi apertado, não renova o tempo e avalia a subtração
 
-    SBIS PIND, SENSOR    ;
-    RJMP Avalia_Zero     ;   
+    SBIS PIND, SENSOR    ; Caso esteja detectando movimento ativamente, pula para a próxima
+    RJMP Avalia_Zero     ; Se estiver inativo, avalia a subtraçao do tempo  
 
-    LDI DEZENA, 1        ;
+    LDI DEZENA, 1        ; Se estiver detectando movimento, trava o tempo em 15
     LDI UNIDADE, 5       ;
-    RJMP Fim_ISR         ;          
+    RJMP Fim_ISR         ; Pula a subtração e vai para o fim         
 
 Avalia_Zero:
-    CPI DEZENA, 0        ;
-    BRNE Decrementa_Tempo ;
-    CPI UNIDADE, 0       ;
-    BREQ Fim_ISR         ;
+    CPI DEZENA, 0        ; Verifica se a dezena é 0
+    BRNE Decrementa_Tempo ; Se a dezena não for 0, ainda tem tempo, vai decrementar
+    CPI UNIDADE, 0       ; Verifica se a unidade é 0
+    BREQ Fim_ISR         ; Se dezena for 0 e unidade for 0, o tempo acabou. Pula pro fim sem decrementar
 
 Decrementa_Tempo:
-    CPI UNIDADE, 0       ;
-    BRNE Sub_Unidade     ;
-    DEC DEZENA           ;
-    LDI UNIDADE, 9       ;
-    RJMP Fim_ISR         ;
+    CPI UNIDADE, 0       ; Verifica se a unidade é 0
+    BRNE Sub_Unidade     ; Subtrai a unidade caso não seja
+    DEC DEZENA           ; Decrementa a dezena caso a unidade seja 0
+    LDI UNIDADE, 9       ; A unidade vira 9
+    RJMP Fim_ISR         ; Pula para o fim
 
 Sub_Unidade:
-    DEC UNIDADE          ;
+    DEC UNIDADE          ; Decremento da unidade
 
 Fim_ISR:
-    POP AUX              ;
-    OUT SREG, AUX        ;
-    POP AUX              ;
-    RETI                 ;
+    POP AUX              ; Restaura o registrador de status da pilha
+    OUT SREG, AUX        ; Escreve no registrador de status
+    POP AUX              ; Restaura o valor original do AUX na pilha
+    RETI                 ; Retorno da interrupção
 
 Tabela:
     .DB 0x3F, 0x06 ; 0, 1
